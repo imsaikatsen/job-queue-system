@@ -1,0 +1,44 @@
+# Node modules (never copy from host)
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Build output
+dist
+build
+
+# Logs
+logs
+*.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker files (optional)
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
+
+# IDE/editor folders
+.vscode
+.idea
+
+# Tests and coverage
+coverage
+*.spec.ts
+
+# Temporary files
+tmp
+temp
+*.swp

@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16
+    container_name: job-queue-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: job_queue
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    image: job-queue-system:latest 
+    container_name: job-queue-api
+    command: npm run start:prod
+    ports:
+      - "5000:3000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: job_queue
+      JWT_SECRET: supersecret
+    depends_on:
+      - db
+
+  worker:
+    image: job-queue-system:latest
+    container_name: job-queue-worker
+    command: npm run start:worker  
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: job_queue
+      JWT_SECRET: supersecret
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

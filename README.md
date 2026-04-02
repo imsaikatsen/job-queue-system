@@ -40,7 +40,7 @@ A **Job Queue System** built with **NestJS**, **PostgreSQL**, and **Docker**, su
 git clone <your-github-repo-url>
 cd job-queue-system
 
-2. Create .env file
+### 2. Create .env file
 
 DB_HOST=db
 DB_PORT=5432
@@ -49,13 +49,14 @@ DB_PASS=postgres
 DB_NAME=job_queue
 JWT_SECRET=supersecret
 
-3. Start Docker containers
+### 3. Start Docker containers
+   
 
 docker-compose up --build
 API: http://localhost:5000
 Worker: Runs in the background and processes jobs
 
-4. Stop containers
+### 4. Stop containers
 docker-compose down
 
 📬 API Usage

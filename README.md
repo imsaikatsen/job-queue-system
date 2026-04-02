@@ -33,7 +33,7 @@ A **Job Queue System** built with **NestJS**, **PostgreSQL**, and **Docker**, su
 ---
 
 ## 📁 Project Structure
-.
+job-queue-system/
 ├── src/
 │ ├── main.ts # API entry point
 │ ├── worker.ts # Worker entry point

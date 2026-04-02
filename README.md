@@ -106,6 +106,7 @@ Get single job:
 curl http://localhost:5000/jobs/1
 
 🔄 Job Statuses
+
 Status	Meaning
 pending	Job is waiting to be processed
 processing	Job is currently being processed by worker

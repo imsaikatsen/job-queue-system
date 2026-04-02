@@ -30,22 +30,6 @@ A **Job Queue System** built with **NestJS**, **PostgreSQL**, and **Docker**, su
 | **PostgreSQL** | Stores all job data |
 | **Docker Compose** | Orchestrates all services |
 
----
-
-## 📁 Project Structure
-job-queue-system/
-├── src/
-│ ├── main.ts # API entry point
-│ ├── worker.ts # Worker entry point
-│ └── modules/ # NestJS modules (jobs, auth, workers, etc.)
-├── Dockerfile
-├── docker-compose.yml
-├── package.json
-└── README.md
-
-
----
-
 
 ---
 

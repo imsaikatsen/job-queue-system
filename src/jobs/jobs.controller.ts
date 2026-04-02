@@ -6,8 +6,12 @@ export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
   @Post()
-  create(@Body() body: { type: string; payload: any }) {
-    return this.jobsService.createJob(body.type, body.payload);
+  create(@Body() body: { type: string; payload: any; maxAttempts?: number }) {
+    return this.jobsService.createJob(
+      body.type,
+      body.payload,
+      body.maxAttempts ?? 3,
+    );
   }
 
   @Get()

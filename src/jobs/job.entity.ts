@@ -28,6 +28,12 @@ export class Job {
   @Column({ default: 0 })
   attempts: number;
 
+  @Column({ default: 3 })
+  maxAttempts: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  nextRunAt: Date | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

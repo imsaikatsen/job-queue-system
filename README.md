@@ -1,47 +1,80 @@
-Job Queue System
+# 🚀 Job Queue System
 
-A simple job queue system built with NestJS, PostgreSQL, and Docker, featuring asynchronous job processing with a worker and retry logic.
+[![Node.js](https://img.shields.io/badge/Node.js-18.x-green)](https://nodejs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-v10-orange)](https://nestjs.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-24-blue?logo=docker)](https://www.docker.com/)
 
-Features
-Create and manage jobs via REST API
-Asynchronous processing using a worker
-Retry logic for failed jobs
-Dockerized development environment
-Environment-based configuration
-Architecture
+A **Job Queue System** built with **NestJS**, **PostgreSQL**, and **Docker**, supporting asynchronous job processing, retries, and a background worker.
+
+---
+
+## ✨ Features
+
+- REST API for job creation & management  
+- Asynchronous background **worker**  
+- Automatic **retry logic** for failed jobs  
+- Fully **Dockerized** development environment  
+- Environment-based configuration  
+
+---
+
+## 🏗 Architecture
 [API Container] ---> [PostgreSQL Container] <--- [Worker Container]
-API: Runs on port 5000, handles job creation and management
-Worker: Continuously polls pending jobs and updates their status
-PostgreSQL: Stores all job data
-Docker Compose: Orchestrates all services
-Project Structure
+
+
+| Component | Role |
+|-----------|------|
+| **API** | Handles job creation & management (Port 5000) |
+| **Worker** | Polls pending jobs & updates status asynchronously |
+| **PostgreSQL** | Stores all job data |
+| **Docker Compose** | Orchestrates all services |
+
+---
+
+## 📁 Project Structure
 .
 ├── src/
-│   ├── main.ts       # API entry point
-│   ├── worker.ts     # Worker entry point
-│   └── modules/      # NestJS modules (jobs, auth, workers, etc.)
+│ ├── main.ts # API entry point
+│ ├── worker.ts # Worker entry point
+│ └── modules/ # NestJS modules (jobs, auth, workers, etc.)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── package.json
 └── README.md
-Installation & Running Locally
-Clone the repository
+
+
+---
+
+
+---
+
+## ⚡ Installation & Running Locally
+
+### 1. Clone the repository
+
 git clone <your-github-repo-url>
 cd job-queue-system
-Create .env file
+
+2. Create .env file
+
 DB_HOST=db
 DB_PORT=5432
 DB_USER=postgres
 DB_PASS=postgres
 DB_NAME=job_queue
 JWT_SECRET=supersecret
-Start Docker containers
+
+3. Start Docker containers
+
 docker-compose up --build
-API will be available at http://localhost:5000
-Worker runs in the background and processes jobs
-Stop containers
+API: http://localhost:5000
+Worker: Runs in the background and processes jobs
+
+4. Stop containers
 docker-compose down
-API Usage
+
+📬 API Usage
 Create Job
 
 POST /jobs
@@ -65,8 +98,7 @@ Response Example (Pending Job):
   "updatedAt": "2026-04-02T03:50:40.769Z"
 }
 
-Response After Worker Processes:
-
+After Worker Processes:
 {
   "id": 1,
   "type": "email",
@@ -76,27 +108,50 @@ Response After Worker Processes:
   "createdAt": "2026-04-02T03:50:40.769Z",
   "updatedAt": "2026-04-02T03:53:51.768Z"
 }
-NPM Scripts
-# development
+
+💻 Test API with curl
+Create a job:
+curl -X POST http://localhost:5000/jobs \
+-H "Content-Type: application/json" \
+-d '{"type":"email","payload":{"to":"example@gmail.com"}}'
+
+Get all jobs:
+curl http://localhost:5000/jobs
+
+Get single job:
+curl http://localhost:5000/jobs/1
+
+🔄 Job Statuses
+Status	Meaning
+pending	Job is waiting to be processed
+processing	Job is currently being processed by worker
+completed	Job successfully processed
+failed	Job failed, will retry based on retry logic
+
+Retry Demo:
+
+Worker retries failed jobs up to 3 attempts
+Status updates after each attempt
+
+🛠 NPM Scripts
+# Start development server
 npm run start
 
-# watch mode
+# Watch mode
 npm run start:dev
 
-# production
+# Production mode
 npm run start:prod
 
-# run worker
+# Run worker
 npm run start:worker
 
-# unit tests
+# Unit tests
 npm run test
 
-# e2e tests
+# End-to-end tests
 npm run test:e2e
 
-# test coverage
+# Test coverage
 npm run test:cov
-License
-
-MIT © 2026
+   

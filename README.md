@@ -5,139 +5,188 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-24-blue?logo=docker)](https://www.docker.com/)
 
-A **Job Queue System** built with **NestJS**, **PostgreSQL**, and **Docker**, supporting asynchronous job processing, retries, and a background worker.
+---
+
+## 📌 Overview
+
+A lightweight **asynchronous job processing system** built with **NestJS**, **PostgreSQL**, and **Docker**.
+
+This project demonstrates how backend systems handle:
+
+- Background job execution  
+- Retry mechanisms  
+- Worker-based architecture  
+- State-driven processing  
+
+> ⚠️ Built from first principles without using external queue frameworks like BullMQ, Kafka, or RabbitMQ.
 
 ---
 
-## ✨ Features
+## 🎯 Purpose of This Project
 
-- REST API for job creation & management  
-- Asynchronous background **worker**  
-- Automatic **retry logic** for failed jobs  
-- Fully **Dockerized** development environment  
-- Environment-based configuration  
+This system was built to deeply understand:
+
+- How job queues work internally  
+- How workers process jobs asynchronously  
+- How retry and scheduling logic works  
+- How state transitions ensure consistency  
+- Tradeoffs of database-backed queue systems  
 
 ---
 
 ## 🏗 Architecture
-[API Container] ---> [PostgreSQL Container] <--- [Worker Container]
 
 
-| Component | Role |
-|-----------|------|
-| **API** | Handles job creation & management (Port 5000) |
-| **Worker** | Polls pending jobs & updates status asynchronously |
-| **PostgreSQL** | Stores all job data |
-| **Docker Compose** | Orchestrates all services |
+API Service → PostgreSQL ← Worker Service
 
+
+| Component | Responsibility |
+|------------|----------------|
+| API | Creates and manages jobs |
+| Worker | Processes jobs asynchronously |
+| PostgreSQL | Stores job state and metadata |
+| Docker | Local environment orchestration |
 
 ---
 
-## ⚡ Installation & Running Locally
+## 🔄 Job Lifecycle (State Machine)
 
-### 1. Clone the repository
 
-git clone <your-github-repo-url>
+PENDING → PROCESSING → COMPLETED
+↓
+FAILED → RETRY → PENDING
+
+
+| State      | Meaning                  |
+|------------|--------------------------|
+| PENDING    | Waiting for execution    |
+| PROCESSING | Currently being executed |
+| COMPLETED  | Successfully finished     |
+| FAILED     | Max retries exceeded      |
+
+---
+
+## 🔁 Retry Mechanism
+
+### Strategy
+
+The system implements a controlled retry mechanism using exponential backoff.
+
+Each job tracks:
+- `attempts`
+- `maxAttempts`
+- `nextRunAt`
+
+---
+
+### Backoff Strategy
+
+| Attempt      | Delay |
+|--------------|------|
+| 1st retry    | 1s   |
+| 2nd retry    | 5s   |
+| 3rd retry    | 15s  |
+
+### RETRY_BACKOFF_MS = [1000, 5000, 15000];
+Purpose
+
+Prevents:
+
+retry storms
+system overload
+repeated failure loops
+⚙ Worker Design
+
+The worker runs independently and:
+
+Polls database every 3 seconds
+Fetches PENDING jobs
+Marks job as PROCESSING
+Executes job logic
+Updates job state
+
+⚠ Known Limitations
+1. Database Polling
+Continuous DB queries
+Not scalable for high throughput systems
+2. No Distributed Locking
+Multiple workers may process same job
+3. Worker Crash Recovery Gap
+PROCESSING jobs may get stuck if worker fails
+4. No Observability Layer
+Only console logging
+
+
+🧠 Key Engineering Concepts Demonstrated
+
+Asynchronous system design
+Background job processing
+State machine modeling
+Retry & failure handling
+Worker-based architecture
+Database-backed scheduling
+System design tradeoffs
+
+
+🚀 Setup Instructions
+
+1. Clone repository
+git clone <repo-url>
 cd job-queue-system
-
-### 2. Create .env file
-
+2. Environment variables
 DB_HOST=db
 DB_PORT=5432
 DB_USER=postgres
 DB_PASS=postgres
 DB_NAME=job_queue
 JWT_SECRET=supersecret
-
-### 3. Start Docker containers
-   
-
+4. Start system
 docker-compose up --build
-API: http://localhost:5000
-Worker: Runs in the background and processes jobs
-
-### 4. Stop containers
+API → http://localhost:5000
+Worker runs in background
+5. Stop system
 docker-compose down
 
-📬 API Usage
+📬 API
 Create Job
-
 POST /jobs
-
-Request Body:
-
+```json
 {
   "type": "email",
-  "payload": { "to": "example@gmail.com" }
+  "payload": {
+    "to": "example@gmail.com"
+  }
 }
 
-Response Example (Pending Job):
+```
+Get Jobs
+GET /jobs
+GET /jobs/:id
 
-{
-  "id": 1,
-  "type": "email",
-  "payload": { "to": "example@gmail.com" },
-  "status": "pending",
-  "attempts": 0,
-  "createdAt": "2026-04-02T03:50:40.769Z",
-  "updatedAt": "2026-04-02T03:50:40.769Z"
-}
-
-After Worker Processes:
-{
-  "id": 1,
-  "type": "email",
-  "payload": { "to": "example@gmail.com" },
-  "status": "completed",
-  "attempts": 1,
-  "createdAt": "2026-04-02T03:50:40.769Z",
-  "updatedAt": "2026-04-02T03:53:51.768Z"
-}
-
-💻 Test API with curl
-Create a job:
+💻 Example Requests
+Create job
 curl -X POST http://localhost:5000/jobs \
--H "Content-Type: application/json" \
--d '{"type":"email","payload":{"to":"example@gmail.com"}}'
-
-Get all jobs:
+ "Content-Type: application/json" 
+```json
+ {"type":"email","payload":{"to":"example@gmail.com"}}
+```
+Get all jobs
 curl http://localhost:5000/jobs
-
-Get single job:
+Get single job
 curl http://localhost:5000/jobs/1
+🛠 Scripts
+npm run start        # start server
+npm run start:dev    # development mode
+npm run start:prod   # production mode
+npm run start:worker # worker process
+npm run test         # unit tests
+npm run test:e2e     # e2e tests
+npm run test:cov     # coverage
 
-🔄 Job Statuses
+📌 Summary
 
-Status	Meaning
-pending	Job is waiting to be processed
-processing	Job is currently being processed by worker
-completed	Job successfully processed
-failed	Job failed, will retry based on retry logic
+This project is a foundational backend engineering system built from first principles to understand how job queues, retry systems, and worker-based architectures work internally.
 
-Retry Demo:
+It focuses on:
 
-Worker retries failed jobs up to 3 attempts
-Status updates after each attempt
-
-🛠 NPM Scripts
-# Start development server
-npm run start
-
-# Watch mode
-npm run start:dev
-
-# Production mode
-npm run start:prod
-
-# Run worker
-npm run start:worker
-
-# Unit tests
-npm run test
-
-# End-to-end tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
-   
+core system design, reliability thinking, and asynchronous processing fundamentals.

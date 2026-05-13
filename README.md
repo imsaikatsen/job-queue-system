@@ -129,7 +129,7 @@ System design tradeoffs
 
 
 🚀 Setup Instructions
-
+```bash
 1. Clone repository
 git clone <repo-url>
 cd job-queue-system
@@ -146,7 +146,7 @@ API → http://localhost:5000
 Worker runs in background
 5. Stop system
 docker-compose down
-
+```
 📬 API
 Create Job
 POST /jobs
